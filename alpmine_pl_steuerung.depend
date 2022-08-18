@@ -1,0 +1,18 @@
+# depslib dependency file v1.0
+1660739404 source:c:\users\besitzer\documents\alpmine\alpmine_pl_steuerung\fuse.c
+	<avr/io.h>
+
+1658933460 source:c:\users\besitzer\documents\alpmine\alpmine_pl_steuerung\uart.c
+	<avr/io.h>
+	<util/delay.h>
+
+1660829570 source:c:\users\besitzer\documents\alpmine\alpmine_pl_steuerung\main.c
+	<stdio.h>
+	<stdlib.h>
+	<avr/io.h>
+	<avr/interrupt.h>
+	<util/delay.h>
+	"UART.h"
+
+1658933460 c:\users\besitzer\documents\alpmine\alpmine_pl_steuerung\uart.h
+
