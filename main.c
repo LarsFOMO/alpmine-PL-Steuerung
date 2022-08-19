@@ -1,7 +1,8 @@
-/*
-        17.08.2022
-        HC-SR04 Link: https://www.electronicwings.com/avr-atmega/ultrasonic-module-hc-sr04-interfacing-with-atmega1632
- */
+///
+///                 19.08.2022
+///        alpmine PL Sicherheitssteuerung
+///                 Lars Kager
+///
 #define F_CPU 16000000UL
 #include <stdio.h>
 #include <stdlib.h>
