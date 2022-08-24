@@ -84,7 +84,7 @@ int main(void)
         while(ADCSRA & (1<<ADSC));
         pt100_temp = ADC;                                   //  409,6Bit @ 0°C und 490,7Bit @ 100°C ===>>   0,811°C/Bit
 
-        if(pt100_temp <= 474)                               // Temperatur unter 80°C
+        if(pt100_temp <= 458)                               // Temperatur unter 60°C
         {
             ok++;
         }
@@ -123,6 +123,8 @@ int main(void)
         {
             PORTC |= (1<<ssr1);
             PORTC |= (1<<ssr2);
+            PORTD &= (1<<PD4);
+            PORTD &= (1<<PD5);
         }
 
 /// Alarm blinken

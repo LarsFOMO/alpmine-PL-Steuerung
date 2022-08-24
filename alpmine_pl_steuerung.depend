@@ -6,7 +6,7 @@
 	<avr/io.h>
 	<util/delay.h>
 
-1660899538 source:c:\users\besitzer\documents\alpmine\alpmine_pl_steuerung\main.c
+1661355025 source:c:\users\besitzer\documents\alpmine\alpmine_pl_steuerung\main.c
 	<stdio.h>
 	<stdlib.h>
 	<avr/io.h>
