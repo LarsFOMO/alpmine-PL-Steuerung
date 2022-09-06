@@ -3,6 +3,10 @@
 ///        alpmine PL Sicherheitssteuerung
 ///                 Lars Kager
 ///
+
+/// INFO
+/// Wenn eine Lampe leuchtet (PD5) gibt es ein Problem, wenn beide Lampen leuchten befindet sich das Programm im Startvorgang.
+
 #define F_CPU 16000000UL
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,8 +21,10 @@
 #define ssr2 PC3
 
 void ssr_off(void);
+void delay_1min(uint8_t anzahl);
 
 uint64_t timer1_Overflow = 0;
+uint8_t i = 0;
 
 ISR(TIMER1_OVF_vect)
 {
@@ -47,12 +53,20 @@ int main(void)
     long count = 0;
     uint16_t distance = 0;
     uint8_t ok = 0;
+    //char test1[] = "";
+    //char test2[] = "";
 
     TIMSK1 = (1<<TOIE1);                                    //  Timer1 Overflow Interrupt = ON
     TCCR1A = 0;
 
     init_usart();
     sei();
+
+/// Startpause [1 min]
+    PORTD |= (1<<PD4);
+    delay_1min(3);
+    PORTD &= ~(1<<PD4);
+
 ///***********************************************************************************************************
 
     while(1)
@@ -68,7 +82,8 @@ int main(void)
         while(ADCSRA & (1<<ADSC));
         leitfaehig = ADC;                                   //  Leitfähigkeit == 1023 ===>> Achtung Wasser!
 
-        if(leitfaehig <= 820)
+        //leitfaehig = 0;
+        if(leitfaehig <= 100)
         {
             ok++;
         }
@@ -84,7 +99,8 @@ int main(void)
         while(ADCSRA & (1<<ADSC));
         pt100_temp = ADC;                                   //  409,6Bit @ 0°C und 490,7Bit @ 100°C ===>>   0,811°C/Bit
 
-        if(pt100_temp <= 458)                               // Temperatur unter 60°C
+        //pt100_temp = 400;
+        if(pt100_temp <= 463)                               // Temperatur unter 60°C
         {
             ok++;
         }
@@ -112,6 +128,7 @@ int main(void)
         count = ICR1 + (65535 * timer1_Overflow);
         distance = ((((uint64_t)count/100)-375)*11)+400;    //  Messbereich: 4 bis 32cm ==>>    400 bis 3200
 
+        //distance = 500;
         if((distance < 750) && (distance > 450))
         {
             ok++;
@@ -123,27 +140,49 @@ int main(void)
         {
             PORTC |= (1<<ssr1);
             PORTC |= (1<<ssr2);
-            PORTD &= (1<<PD4);
-            PORTD &= (1<<PD5);
+            PORTD |= (1<<PD4);
+            PORTD |= (1<<PD5);
         }
 
 /// Alarm blinken
-        else if(ok < 3)
-        {
-            PORTD ^= (1<<PD4);
-            PORTD ^= (1<<PD5);
-        }
+//        else if(ok < 3)
+//        {
+        PORTD ^= (1<<PD4);
+        PORTD ^= (1<<PD5);
+//        }
 
 /// Delay
         _delay_ms(200);
-
+        //itoa(leitfaehig, test2, 10);
+        //_puts(test2);
     }
 
     return 0;
 }
 
+///***********************************************************************************************************
+/// FUNCTIONS
+
 void ssr_off(void)
 {
     PORTC &= ~(1<<ssr1);
     PORTC &= ~(1<<ssr2);
+    delay_1min(6);                                          //  Delay = 2 min.
 }
+
+void delay_1min(uint8_t anzahl)
+{
+    PORTD |= (1<<PD5);
+
+    for(i = 0; i < anzahl;i++)                              //  Anzahl = 3 ==>> 1 min.
+    {
+        _delay_ms(1000000);
+        _delay_ms(1000000);
+        _delay_ms(1000000);
+        _delay_ms(1000000);
+        _delay_ms(1000000);
+    }
+
+    PORTD &= ~(1<<PD5);
+}
+///***********************************************************************************************************
