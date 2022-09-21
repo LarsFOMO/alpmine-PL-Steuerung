@@ -1,5 +1,5 @@
 ///
-///                 19.08.2022
+///                 21.09.2022
 ///        alpmine PL Sicherheitssteuerung
 ///                 Lars Kager
 ///
@@ -53,8 +53,9 @@ int main(void)
     long count = 0;
     uint16_t distance = 0;
     uint8_t ok = 0;
+    uint8_t aktiv = 0;
     //char test1[] = "";
-    //char test2[] = "";
+    char test2[] = "";
 
     TIMSK1 = (1<<TOIE1);                                    //  Timer1 Overflow Interrupt = ON
     TCCR1A = 0;
@@ -100,11 +101,17 @@ int main(void)
         pt100_temp = ADC;                                   //  409,6Bit @ 0°C und 490,7Bit @ 100°C ===>>   0,811°C/Bit
 
         //pt100_temp = 400;
-        if(pt100_temp <= 463)                               // Temperatur unter 60°C
+        if(pt100_temp <= 446)                               // Temperatur unter 45°C
         {
-            ok++;
+            aktiv = 1;
         }
-        else
+        if(pt100_temp > 454)                                // Temperatur über 55°C
+        {
+            aktiv = 0;
+        }
+        if(aktiv == 1)
+            ok++;
+        if(aktiv == 0)
             ssr_off();
 
 ///  10us Trigger Impuls
@@ -128,7 +135,7 @@ int main(void)
         count = ICR1 + (65535 * timer1_Overflow);
         distance = ((((uint64_t)count/100)-375)*11)+400;    //  Messbereich: 4 bis 32cm ==>>    400 bis 3200
 
-        //distance = 500;
+        distance = 500;
         if((distance < 750) && (distance > 450))
         {
             ok++;
@@ -153,7 +160,7 @@ int main(void)
 
 /// Delay
         _delay_ms(200);
-        //itoa(leitfaehig, test2, 10);
+        //itoa(distance, test2, 10);
         //_puts(test2);
     }
 
